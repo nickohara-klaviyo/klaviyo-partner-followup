@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Build with Klaviyo — Partner Program</title>
+  <meta name="description" content="Already built on Shopify? You're halfway to Klaviyo. Get in front of 200,000+ brands." />
+  <style>
+    :root {
+      /* Klaviyo-leaning palette: black + warm "bone" neutrals */
+      --bg: #fffdf9;               /* app surface, warm white */
+      --page: #ece5d8;             /* bone — page gutter on desktop */
+      --ink: #1a1919;              /* Klaviyo black */
+      --ink-soft: #5c5b59;
+      --ink-faint: #908d86;
+      --line: #ece6da;
+      --line-strong: #ddd5c6;
+      --accent: #1a1919;           /* black — primary buttons (Klaviyo-style) */
+      --accent-pop: #1a1919;       /* monochrome: highlights use black, not orange */
+      --accent-pop-soft: #efe8db;  /* warm cream chip behind highlights */
+      --card: #ffffff;
+      --card-alt: #f4eee3;         /* warm tint for chips & icon tiles */
+      --radius: 18px;
+      --radius-sm: 12px;
+      --shadow: 0 1px 2px rgba(26,25,25,.04), 0 8px 24px rgba(26,25,25,.06);
+      --shadow-pop: 0 10px 28px rgba(26,25,25,.16);
+      --maxw: 480px;
+    }
+
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    html, body { margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--page);
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* App shell — phone-width column centered on larger screens */
+    .app {
+      max-width: var(--maxw);
+      margin: 0 auto;
+      min-height: 100dvh;
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      box-shadow: 0 0 60px rgba(26,25,25,.05);
+    }
+
+    /* Top bar */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: calc(15px + env(safe-area-inset-top, 0px)) 20px 15px 20px;
+      background: rgba(255,253,249,.86);
+      backdrop-filter: saturate(180%) blur(12px);
+      -webkit-backdrop-filter: saturate(180%) blur(12px);
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 9px; font-weight: 700; letter-spacing: -.01em; }
+    .brand .mark {
+      width: 24px; height: 24px; border-radius: 7px;
+      background: var(--accent); color: #fff;
+      display: grid; place-items: center; font-size: 13px; font-weight: 800;
+    }
+    .brand small { display:block; font-weight:500; font-size:11px; color: var(--ink-faint); letter-spacing:.02em; margin-top:-2px;}
+    .back {
+      margin-left: auto;
+      border: none; background: none; cursor: pointer;
+      color: var(--ink-soft); font-size: 14px; font-weight: 600;
+      padding: 6px 8px; border-radius: 8px;
+      display: none; align-items: center; gap: 5px;
+    }
+    .back:hover { background: var(--card-alt); }
+    .back.show { display: inline-flex; }
+
+    /* Progress */
+    .progress { display: flex; gap: 7px; padding: 18px 20px 6px; }
+    .progress span {
+      height: 4px; flex: 1; border-radius: 99px; background: var(--line-strong);
+      transition: background .35s ease;
+    }
+    .progress span.on { background: var(--accent-pop); }
+
+    /* Screen content */
+    main { flex: 1; padding: 12px 20px 28px; }
+    .screen { display: none; animation: rise .42s cubic-bezier(.16,1,.3,1); }
+    .screen.active { display: block; }
+    @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+    .eyebrow {
+      display: inline-block; font-size: 12px; font-weight: 700; letter-spacing: .08em;
+      text-transform: uppercase; color: var(--accent-pop);
+      background: var(--accent-pop-soft); padding: 6px 11px; border-radius: 99px;
+    }
+    h1 { font-size: 33px; line-height: 1.08; letter-spacing: -.025em; margin: 16px 0 0; font-weight: 800; }
+    h2 { font-size: 25px; line-height: 1.12; letter-spacing: -.02em; margin: 4px 0 0; font-weight: 800; }
+    .lede { font-size: 16px; color: var(--ink-soft); margin: 14px 0 0; }
+    .kicker { font-size: 14px; color: var(--ink-faint); margin: 6px 0 0; }
+
+    /* Hero */
+    .hero-art {
+      margin: 24px 0 4px; border-radius: var(--radius);
+      background:
+        radial-gradient(120% 80% at 80% 0%, #2b2b2b 0%, #1a1919 55%);
+      color: #fff; padding: 26px 22px; position: relative; overflow: hidden;
+    }
+    .hero-art .stat { font-size: 40px; font-weight: 850; letter-spacing: -.03em; line-height: 1; }
+    .hero-art .stat b { color: #fff; }
+    .hero-art .stat-label { font-size: 14px; color: #cfcdc9; margin-top: 8px; }
+    .hero-art .spark {
+      position: absolute; right: -30px; top: -30px; width: 160px; height: 160px;
+      background: radial-gradient(circle, rgba(255,255,255,.10), transparent 65%);
+      filter: blur(8px);
+    }
+    .hero-points { list-style: none; padding: 0; margin: 22px 0 0; display: grid; gap: 12px; }
+    .hero-points li { display: flex; gap: 11px; align-items: flex-start; font-size: 15px; color: var(--ink); }
+    .hero-points .tick {
+      flex: none; width: 22px; height: 22px; border-radius: 7px; margin-top: 1px;
+      background: var(--accent-pop-soft); color: var(--accent-pop);
+      display: grid; place-items: center; font-size: 13px; font-weight: 800;
+    }
+
+    /* Buttons */
+    .btn {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; border: none; cursor: pointer;
+      font-size: 16px; font-weight: 700; letter-spacing: -.01em;
+      padding: 17px 20px; border-radius: 14px; text-decoration: none;
+      transition: transform .12s ease, box-shadow .2s ease, background .2s ease;
+    }
+    .btn:active { transform: translateY(1px) scale(.995); }
+    .btn-primary { background: var(--ink); color: #fff; box-shadow: var(--shadow-pop); }
+    .btn-primary:hover { background: #000; }
+    .btn-dark { background: var(--ink); color: #fff; }
+    .btn-dark:hover { background: #000; }
+    .btn-ghost { background: var(--card-alt); color: var(--ink); }
+    .btn-ghost:hover { background: #ece4d6; }
+
+    .sticky-cta {
+      position: sticky; bottom: 0; z-index: 15;
+      padding: 24px 20px calc(20px + env(safe-area-inset-bottom, 0px));
+      background: linear-gradient(to top, var(--bg) 72%, rgba(255,253,249,0));
+    }
+    .micro { text-align: center; font-size: 12.5px; color: var(--ink-faint); margin: 12px 0 0; }
+
+    /* Option cards (paths / categories) */
+    .options { display: grid; gap: 12px; margin-top: 22px; }
+    .opt {
+      text-align: left; width: 100%; cursor: pointer;
+      background: var(--card); border: 1.5px solid var(--line-strong);
+      border-radius: var(--radius); padding: 16px 16px;
+      display: flex; align-items: center; gap: 14px;
+      transition: border-color .18s ease, transform .12s ease, box-shadow .2s ease;
+    }
+    .opt:hover { border-color: var(--ink); box-shadow: var(--shadow); }
+    .opt:active { transform: translateY(1px); }
+    .opt .ico {
+      flex: none; width: 44px; height: 44px; border-radius: 12px;
+      background: var(--card-alt); display: grid; place-items: center; font-size: 22px;
+    }
+    .opt .txt { flex: 1; min-width: 0; }
+    .opt .txt .t { display: block; font-weight: 750; font-size: 16px; letter-spacing: -.01em; }
+    .opt .txt .d { display: block; font-size: 13.5px; color: var(--ink-soft); margin-top: 2px; }
+    .opt .arr { flex: none; color: var(--ink-faint); font-size: 19px; }
+
+    .opt.compact { padding: 14px 16px; }
+    .opt.compact .ico { width: 38px; height: 38px; font-size: 19px; border-radius: 10px; }
+
+    /* Endpoint */
+    .endpoint-head { margin-top: 4px; }
+    .pill-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+    .pill { font-size: 12px; font-weight: 650; color: var(--ink-soft); background: var(--card-alt); padding: 6px 11px; border-radius: 99px; }
+
+    .primary-res {
+      display: block; text-decoration: none; color: inherit;
+      margin-top: 20px; border-radius: var(--radius); overflow: hidden;
+      border: 1.5px solid var(--ink); box-shadow: var(--shadow);
+      transition: transform .12s ease, box-shadow .2s ease;
+    }
+    .primary-res:active { transform: translateY(1px); }
+    .primary-res .top { background: var(--accent); color: #fff; padding: 18px 18px 16px; position: relative; }
+    .primary-res .top .tag { font-size: 11px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: rgba(255,255,255,.62); }
+    .primary-res .top .h { font-size: 20px; font-weight: 800; letter-spacing: -.02em; margin-top: 7px; }
+    .primary-res .top .s { font-size: 14px; color: #cfcdc9; margin-top: 6px; }
+    .primary-res .go { background: var(--bg); padding: 13px 18px; font-weight: 700; font-size: 14.5px; color: var(--ink); display: flex; align-items: center; justify-content: space-between; }
+
+    .sec-label { font-size: 12px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-faint); margin: 26px 0 0; }
+    .res-list { display: grid; gap: 10px; margin-top: 12px; }
+    .res {
+      display: flex; align-items: center; gap: 13px; text-decoration: none; color: inherit;
+      background: var(--card); border: 1px solid var(--line); border-radius: var(--radius-sm);
+      padding: 13px 14px; transition: border-color .18s ease, background .18s ease;
+    }
+    .res:hover { border-color: var(--line-strong); background: var(--card-alt); }
+    .res .ico { flex: none; width: 34px; height: 34px; border-radius: 9px; background: var(--card-alt); display: grid; place-items: center; font-size: 17px; }
+    .res .txt { min-width: 0; }
+    .res .txt .t { display: block; font-weight: 700; font-size: 14.5px; }
+    .res .txt .d { display: block; font-size: 12.5px; color: var(--ink-soft); margin-top: 1px; }
+    .res .arr { margin-left: auto; color: var(--ink-faint); }
+
+    /* Follow-up block */
+    .followup {
+      margin-top: 28px; border-radius: var(--radius); padding: 20px 18px;
+      background: var(--card-alt); border: 1px solid var(--line);
+    }
+    .followup h3 { margin: 0; font-size: 17px; letter-spacing: -.01em; }
+    .followup p { margin: 7px 0 0; font-size: 13.5px; color: var(--ink-soft); }
+    .field { display: flex; gap: 8px; margin-top: 14px; }
+    .field input {
+      flex: 1; min-width: 0; border: 1.5px solid var(--line-strong); border-radius: 12px;
+      padding: 13px 14px; font-size: 15px; font-family: inherit; color: var(--ink); background: #fff;
+    }
+    .field input:focus { outline: none; border-color: var(--ink); }
+    .field button { flex: none; width: auto; padding: 13px 18px; }
+    .field-note { font-size: 12px; color: var(--ink-faint); margin-top: 9px; }
+    .ok-msg { display: none; margin-top: 12px; font-size: 14px; font-weight: 650; color: #1f7a4d; }
+    .ok-msg.show { display: block; }
+
+    /* Capture step (name + email, after path selection) */
+    .capture-form { margin-top: 22px; display: grid; gap: 6px; }
+    .capture-form .lbl { font-size: 13px; font-weight: 650; color: var(--ink-soft); margin-top: 8px; }
+    .capture-form input {
+      width: 100%; border: 1.5px solid var(--line-strong); border-radius: 12px;
+      padding: 14px; font-size: 16px; font-family: inherit; color: var(--ink); background: #fff;
+    }
+    .capture-form input:focus { outline: none; border-color: var(--ink); }
+    .capture-form .btn { margin-top: 14px; }
+    .reasons { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 9px; }
+    .reasons li { display: flex; gap: 10px; align-items: flex-start; font-size: 14px; color: var(--ink-soft); }
+    .reasons .tick { flex: none; width: 19px; height: 19px; border-radius: 6px; margin-top: 1px;
+      background: var(--accent-pop-soft); color: var(--accent-pop); display: grid; place-items: center; font-size: 11px; font-weight: 800; }
+    .skip-link { background: none; border: none; color: var(--ink-faint); font-size: 13.5px; font-weight: 600;
+      cursor: pointer; padding: 12px; font-family: inherit; text-decoration: underline; display: block; margin: 4px auto 0; }
+
+    .restart { text-align: center; margin: 26px 0 6px; }
+    .restart button { background: none; border: none; color: var(--ink-faint); font-size: 13.5px; cursor: pointer; text-decoration: underline; font-family: inherit; }
+
+    .footer { padding: 20px; text-align: center; font-size: 11.5px; color: var(--ink-faint); border-top: 1px solid var(--line); }
+
+    @media (min-width: 600px) {
+      .app { margin: 24px auto; min-height: calc(100dvh - 48px); border-radius: 26px; overflow: hidden; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="mark">K</span>
+        <span>Klaviyo<small>Partner Program</small></span>
+      </div>
+      <button class="back" id="backBtn">← Back</button>
+    </header>
+
+    <div class="progress" id="progress">
+      <span></span><span></span><span></span>
+    </div>
+
+    <main id="main"><!-- screens injected here --></main>
+
+    <footer class="footer">Built for partners at the event · developers.klaviyo.com</footer>
+  </div>
+
+  <script>
+  /* ============================================================
+     CONTENT MODEL
+     Everything attendees see comes from here. To update a link,
+     swap a URL below — no layout changes needed.
+     Resource shape: { icon, title, desc, url }
+     ============================================================ */
+
+  // ---- Top-level paths (Screen 2) ----
+  const PATHS = {
+    new: {
+      icon: "🚀",
+      title: "New to Klaviyo",
+      desc: "Scope use cases, find your build guide, and get started",
+    },
+    oauth: {
+      icon: "🔑",
+      title: "Private key app",
+      desc: "Migrate an existing API-key integration to OAuth",
+    },
+    existing: {
+      icon: "📈",
+      title: "Existing Klaviyo partner",
+      desc: "Expand what I've already built",
+    },
+    unsure: {
+      icon: "💡",
+      title: "Just exploring",
+      desc: "I'm interested but not building yet",
+    },
+  };
+
+  // ---- Path A categories (Screen 3) → each maps to a build guide endpoint ----
+  const CATEGORIES = [
+    { id: "reviews",      icon: "⭐", title: "Reviews & UGC" },
+    { id: "loyalty",      icon: "🎁", title: "Loyalty & Rewards" },
+    { id: "subscriptions",icon: "🔁", title: "Subscriptions" },
+    { id: "shipping",     icon: "📦", title: "Shipping & Returns" },
+    { id: "helpdesk",     icon: "💬", title: "Helpdesk & CX" },
+    { id: "ecommerce",    icon: "🛒", title: "Ecommerce / Storefront" },
+    { id: "forms",        icon: "📝", title: "Forms & Popups" },
+    { id: "analytics",    icon: "📊", title: "Analytics & Reporting" },
+    { id: "other",        icon: "✨", title: "Something else" },
+  ];
+
+  // Shared developer links (swap to deep links as they're finalized)
+  const LINKS = {
+    devPortal:    "https://developers.klaviyo.com/",
+    apiOverview:  "https://developers.klaviyo.com/en/reference/api_overview",
+    oauth:        "https://developers.klaviyo.com/en/docs/set_up_oauth",
+    partnerGuide: "https://www.klaviyo.com/partners/signup/technology",
+    listing:      "https://developers.klaviyo.com/en/docs/marketplace_app_listing",
+    catalog:      "https://developers.klaviyo.com/en/reference/get_catalog_items",
+    customerHub:  "https://developers.klaviyo.com/en/docs/customer_hub",
+    customObjects:"https://developers.klaviyo.com/en/docs/custom_objects",
+    caseStudies:  "https://www.klaviyo.com/partners",
+    contactEmail: "partners@klaviyo.com",
+  };
+
+  // ---- Build guide per category (Path A endpoint primary resource) ----
+  function guideFor(catId) {
+    const cat = CATEGORIES.find(c => c.id === catId) || CATEGORIES[CATEGORIES.length - 1];
+    return {
+      tag: cat.title + " · Build guide",
+      title: "Build a " + cat.title + " integration",
+      sub: "The recommended starting point for your category — data model, key APIs, and a working flow.",
+      url: LINKS.apiOverview,
+      icon: cat.icon,
+    };
+  }
+
+  // ---- Secondary resources reused across Path A ----
+  const PATH_A_SECONDARY = [
+    { icon: "🤝", title: "Partnership guide", desc: "How the program works & what you get", url: LINKS.partnerGuide },
+    { icon: "🔐", title: "Set up OAuth", desc: "Auth your integration the right way", url: LINKS.oauth },
+    { icon: "📋", title: "Listing & submission steps", desc: "Get your app into the marketplace", url: LINKS.listing },
+    { icon: "📚", title: "API reference", desc: "Full endpoint docs & revisions", url: LINKS.apiOverview },
+  ];
+
+  /* ============================================================
+     ENDPOINTS — Paths B, C, D (and A is generated above)
+     ============================================================ */
+  const ENDPOINTS = {
+    oauth: {
+      eyebrow: "Most of the work is done",
+      h: "Move your private-key app to OAuth.",
+      lede: "Your integration already works — migrating is mostly swapping how you authenticate. Here's the shortest path.",
+      pills: ["PKCE flow", "Scope mapping", "Marketplace ready"],
+      primary: {
+        tag: "Migration · Start here",
+        title: "Migrate from API key to OAuth",
+        sub: "Audit your current key usage, map it to OAuth scopes, and swap to the PKCE flow without breaking existing users.",
+        url: LINKS.oauth,
+        icon: "🔑",
+      },
+      secondaryLabel: "Make the move easier",
+      secondary: [
+        { icon: "🔐", title: "Set up OAuth & PKCE", desc: "The auth flow, step by step", url: LINKS.oauth },
+        { icon: "🗺️", title: "Map endpoints to scopes", desc: "Which scopes your calls need", url: LINKS.apiOverview },
+        { icon: "📋", title: "Listing & program guide", desc: "Get marketplace-ready", url: LINKS.listing },
+        { icon: "📚", title: "API reference", desc: "Endpoints, scopes & revisions", url: LINKS.apiOverview },
+      ],
+    },
+    existing: {
+      eyebrow: "Level up your listing",
+      h: "Expand what you've already built.",
+      lede: "New platform capabilities make your integration stickier — and put you on the path to preferred partner.",
+      pills: ["New APIs", "Customer Hub", "Preferred partner"],
+      primary: {
+        tag: "Opportunity · Highest impact",
+        title: "Build with Customer Hub & custom objects",
+        sub: "Surface your data inside Klaviyo and power richer use cases with the newest platform capabilities.",
+        url: LINKS.customerHub,
+        icon: "🧩",
+      },
+      secondaryLabel: "More ways to grow",
+      secondary: [
+        { icon: "🆕", title: "What's new in the API", desc: "Latest endpoints & revisions", url: LINKS.apiOverview },
+        { icon: "🗂️", title: "Custom & integration objects", desc: "Model your data in Klaviyo", url: LINKS.customObjects },
+        { icon: "⭐", title: "Improve your listing", desc: "Stand out in the marketplace", url: LINKS.listing },
+        { icon: "🏆", title: "Become a preferred partner", desc: "Criteria & benefits", url: LINKS.partnerGuide },
+        { icon: "🎬", title: "Partner examples", desc: "See standout integrations", url: LINKS.caseStudies },
+      ],
+    },
+    unsure: {
+      eyebrow: "Worth a look",
+      h: "200,000+ brands. One integration.",
+      lede: "See why partners build on Klaviyo before you write a line of code.",
+      pills: ["Proof points", "Real results", "No commitment"],
+      primary: {
+        tag: "Why Klaviyo",
+        title: "The marketplace value, in 3 minutes",
+        sub: "Reach, revenue share, and co-marketing — what building with Klaviyo actually gets you.",
+        url: LINKS.caseStudies,
+        icon: "💡",
+      },
+      secondaryLabel: "Proof & inspiration",
+      secondary: [
+        { icon: "📈", title: "Partner success stories", desc: "Outcomes from real partners", url: LINKS.caseStudies },
+        { icon: "🛒", title: "Marketplace overview", desc: "How brands discover you", url: LINKS.partnerGuide },
+        { icon: "🚀", title: "Why build with Klaviyo", desc: "The case for the platform", url: LINKS.partnerGuide },
+        { icon: "📚", title: "Peek at the docs", desc: "See how building works", url: LINKS.devPortal },
+      ],
+    },
+  };
+
+  /* ============================================================
+     APP STATE + RENDER
+     ============================================================ */
+  const main = document.getElementById("main");
+  const backBtn = document.getElementById("backBtn");
+  const progressEl = document.getElementById("progress");
+  let history = [];   // stack of {screen, payload}
+  let lead = { name: "", email: "" };   // captured up front, after "Get started"
+
+  /* ---- Lead tracking -----------------------------------------------------
+     One session = one row in the sheet, keyed by sessionId and UPDATED after
+     each step (so we capture drop-offs, not just completions). Paste your
+     Google Sheets Apps Script web-app URL below. Leave empty to just log.
+  ------------------------------------------------------------------------- */
+  const LEAD_ENDPOINT = "https://script.google.com/macros/s/AKfycbyKzXLF4_gLuEszFrHlzed7_m-gr94RESgbaR8Q8Vga0fAqo0JNF77XQQqUlwCJ9baI/exec";
+  function newSession() {
+    const id = (window.crypto && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : Date.now() + "-" + Math.random().toString(16).slice(2);
+    return {
+      sessionId: id,
+      name: "", email: "",
+      path: "", pathLabel: "",
+      category: "", categoryLabel: "",
+      step: "", startedAt: new Date().toISOString(),
+    };
+  }
+  let session = newSession();   // one session (= one sheet row) per visitor
+
+  // Send the current session snapshot after each step (fire-and-forget upsert)
+  function track(step) {
+    session.step = step;
+    session.updatedAt = new Date().toISOString();
+    console.log("[lead]", step, session);
+    if (!LEAD_ENDPOINT) return;
+    fetch(LEAD_ENDPOINT, {
+      method: "POST",
+      mode: "no-cors",
+      body: JSON.stringify(session),
+    }).catch(err => console.warn("lead save failed", err));
+  }
+
+  function escapeText(s) {
+    return String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  }
+
+  function setProgress(step, total) {
+    progressEl.innerHTML = "";
+    for (let i = 0; i < total; i++) {
+      const s = document.createElement("span");
+      if (i < step) s.className = "on";
+      progressEl.appendChild(s);
+    }
+  }
+
+  function go(screen, payload, isBack) {
+    if (!isBack) history.push({ screen, payload });
+    backBtn.classList.toggle("show", history.length > 1);
+    RENDER[screen](payload);
+    main.scrollTo(0, 0);
+    window.scrollTo(0, 0);
+  }
+
+  backBtn.onclick = () => {
+    if (history.length > 1) {
+      history.pop();
+      const prev = history[history.length - 1];
+      go(prev.screen, prev.payload, true);
+    }
+  };
+
+  function resourceListHTML(items) {
+    return items.map(r => `
+      <a class="res" href="${r.url}" target="_blank" rel="noopener">
+        <span class="ico">${r.icon}</span>
+        <span class="txt"><span class="t">${r.title}</span><span class="d">${r.desc}</span></span>
+        <span class="arr">→</span>
+      </a>`).join("");
+  }
+
+  function handoffHTML() {
+    if (lead.email) {
+      return `
+      <div class="followup">
+        <h3>✓ On its way${lead.name ? ", " + escapeText(lead.name.split(" ")[0]) : ""}</h3>
+        <p>We'll email these resources to <b>${escapeText(lead.email)}</b> and follow up with the right next steps.</p>
+      </div>`;
+    }
+    return `
+      <div class="followup">
+        <h3>You're all set</h3>
+        <p>Everything you need to start building is right here — dig in whenever you're ready.</p>
+      </div>`;
+  }
+
+  function endpointHTML(data) {
+    return `
+      <div class="endpoint-head">
+        <span class="eyebrow">${data.eyebrow}</span>
+        <h2 style="margin-top:14px">${data.h}</h2>
+        <p class="lede">${data.lede}</p>
+        <div class="pill-row">${data.pills.map(p => `<span class="pill">${p}</span>`).join("")}</div>
+      </div>
+
+      <a class="primary-res" href="${data.primary.url}" target="_blank" rel="noopener">
+        <div class="top">
+          <div class="tag">${data.primary.tag}</div>
+          <div class="h">${data.primary.title}</div>
+          <div class="s">${data.primary.sub}</div>
+        </div>
+        <div class="go"><span>Open guide</span><span>→</span></div>
+      </a>
+
+      <div class="sec-label">${data.secondaryLabel}</div>
+      <div class="res-list">${resourceListHTML(data.secondary)}</div>
+
+      ${handoffHTML()}
+
+      <div class="restart"><button onclick="restart()">Start over</button></div>`;
+  }
+
+  const RENDER = {
+    // Screen 1 — Hero
+    hero() {
+      setProgress(0, 3);
+      main.innerHTML = `
+        <div class="screen active">
+          <span class="eyebrow">Klaviyo Partner Program</span>
+          <h1>Already built on Shopify? You're halfway to Klaviyo.</h1>
+          <p class="lede">Build once. Get in front of 200,000+ brands and reach more customers through the Klaviyo marketplace.</p>
+
+          <div class="hero-art">
+            <div class="spark"></div>
+            <div class="stat"><b>200,000+</b></div>
+            <div class="stat-label">brands you could reach by building with Klaviyo</div>
+          </div>
+
+          <ul class="hero-points">
+            <li><span class="tick">✓</span><span>Familiar if you've built on Shopify — concepts carry over</span></li>
+            <li><span class="tick">✓</span><span>Clear build guides for your exact category</span></li>
+            <li><span class="tick">✓</span><span>Get listed in front of a huge brand audience</span></li>
+          </ul>
+        </div>
+        <div class="sticky-cta">
+          <button class="btn btn-primary" onclick="startFlow()">Get started →</button>
+          <p class="micro">Takes about 30 seconds</p>
+        </div>`;
+    },
+
+    // Screen 2 — Capture (name + email, right after Get started)
+    capture() {
+      setProgress(1, 3);
+      main.innerHTML = `
+        <div class="screen active">
+          <span class="eyebrow">Quick intro</span>
+          <h2 style="margin-top:14px">First, where should we send your resources?</h2>
+          <p class="lede">Add your name and email and we'll follow up with the right resources and next steps — then we'll point you to exactly what you need.</p>
+          <ul class="reasons">
+            <li><span class="tick">✓</span><span>Send the right follow-up resources</span></li>
+            <li><span class="tick">✓</span><span>Help you with your next steps</span></li>
+            <li><span class="tick">✓</span><span>Tailor support to what you're building</span></li>
+          </ul>
+          <div class="capture-form">
+            <label class="lbl" for="leadName">Name</label>
+            <input id="leadName" type="text" placeholder="Alex Rivera" autocomplete="name" />
+            <label class="lbl" for="leadEmail">Email</label>
+            <input id="leadEmail" type="email" inputmode="email" placeholder="you@company.com" autocomplete="email" />
+            <button class="btn btn-primary" onclick="submitCapture(false)">Continue →</button>
+          </div>
+        </div>`;
+    },
+
+    // Screen 3 — Who are you?
+    who() {
+      setProgress(2, 3);
+      const opts = Object.entries(PATHS).map(([id, p]) => `
+        <button class="opt" onclick="choosePath('${id}')">
+          <span class="ico">${p.icon}</span>
+          <span class="txt"><span class="t">${p.title}</span><span class="d">${p.desc}</span></span>
+          <span class="arr">→</span>
+        </button>`).join("");
+      main.innerHTML = `
+        <div class="screen active">
+          <h2>Tell us about yourself</h2>
+          <p class="lede">We'll point you to the right next step — no scrolling through docs.</p>
+          <div class="options">${opts}</div>
+        </div>`;
+    },
+
+    // Screen 4 (new partners only) — category select
+    category() {
+      setProgress(2, 3);
+      const opts = CATEGORIES.map(c => `
+        <button class="opt compact" onclick="chooseCategory('${c.id}')">
+          <span class="ico">${c.icon}</span>
+          <span class="txt"><span class="t">${c.title}</span></span>
+          <span class="arr">→</span>
+        </button>`).join("");
+      main.innerHTML = `
+        <div class="screen active">
+          <span class="eyebrow">New partner</span>
+          <h2 style="margin-top:14px">What are you building?</h2>
+          <p class="lede">Pick your category and we'll hand you the right build guide.</p>
+          <div class="options">${opts}</div>
+        </div>`;
+    },
+
+    // Endpoint — tailored result
+    endpoint(payload) {
+      setProgress(3, 3);
+      let data;
+      if (payload.path === "new") {
+        const g = guideFor(payload.cat);
+        const cat = CATEGORIES.find(c => c.id === payload.cat);
+        data = {
+          eyebrow: "Your build path",
+          h: cat ? `Build your ${cat.title} integration` : "Your build path",
+          lede: "Start with the guide below — it's the main thing you need. The rest is supporting detail for when you're ready.",
+          pills: ["Recommended guide", "OAuth", "Get listed"],
+          primary: { tag: g.tag, title: g.title, sub: g.sub, url: g.url, icon: g.icon },
+          secondaryLabel: "Next steps",
+          secondary: PATH_A_SECONDARY,
+        };
+      } else {
+        data = ENDPOINTS[payload.path];
+      }
+
+      track("completed");   // reached the tailored resources
+      main.innerHTML = `<div class="screen active">${endpointHTML(data)}</div>`;
+    },
+  };
+
+  // Step 1 — tapped "Get started"
+  window.startFlow = function () {
+    track("started");
+    go("capture");
+  };
+
+  // Step 3 — chose who they are
+  window.choosePath = function (id) {
+    session.path = id;
+    session.pathLabel = (PATHS[id] || {}).title || id;
+    session.category = "";
+    session.categoryLabel = "";
+    track("path_selected");
+    if (id === "new") go("category");
+    else go("endpoint", { path: id });
+  };
+
+  // Step 4 (new partners only) — chose a category
+  window.chooseCategory = function (id) {
+    const cat = CATEGORIES.find(c => c.id === id);
+    session.category = id;
+    session.categoryLabel = cat ? cat.title : id;
+    track("category_selected");
+    go("endpoint", { path: "new", cat: id });
+  };
+
+  window.go = go;
+  window.restart = function () {
+    history = [];
+    lead = { name: "", email: "" };
+    session = newSession();   // fresh row for the next person at the booth
+    go("hero");
+    track("landed");
+  };
+
+  // Step 2 — submitted name + email (captured up front, after "Get started")
+  window.submitCapture = function (skip) {
+    if (!skip) {
+      const nameEl = document.getElementById("leadName");
+      const emailEl = document.getElementById("leadEmail");
+      if (!nameEl.value.trim()) { nameEl.focus(); nameEl.style.borderColor = "#e0533a"; return; }
+      if (!/.+@.+\..+/.test(emailEl.value)) { emailEl.focus(); emailEl.style.borderColor = "#e0533a"; return; }
+      lead.name = nameEl.value.trim();
+      lead.email = emailEl.value.trim();
+      session.name = lead.name;
+      session.email = lead.email;
+      track("identified");
+    }
+    go("who");
+  };
+
+  // Boot
+  go("hero");
+  track("landed");   // Step 0 — page opened (captures scans that bounce)
+  </script>
+</body>
+</html>
