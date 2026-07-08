@@ -307,13 +307,15 @@
 
   // ---- Path A categories (Screen 3) → each maps to a build guide endpoint ----
   const CATEGORIES = [
-    { id: "reviews",      icon: "⭐", title: "Reviews & UGC" },
     { id: "loyalty",      icon: "🎁", title: "Loyalty & Rewards" },
+    { id: "reviews",      icon: "⭐", title: "Reviews" },
     { id: "subscriptions",icon: "🔁", title: "Subscriptions" },
+    { id: "advertising",  icon: "📣", title: "Advertising" },
     { id: "shipping",     icon: "📦", title: "Shipping & Returns" },
     { id: "helpdesk",     icon: "💬", title: "Helpdesk & CX" },
     { id: "ecommerce",    icon: "🛒", title: "Ecommerce / Storefront" },
     { id: "forms",        icon: "📝", title: "Forms & Popups" },
+    { id: "quizzes",      icon: "❓", title: "Quizzes & Surveys" },
     { id: "analytics",    icon: "📊", title: "Analytics & Reporting" },
     { id: "other",        icon: "✨", title: "Something else" },
   ];
@@ -322,6 +324,7 @@
   const LINKS = {
     devPortal:    "https://developers.klaviyo.com/",
     apiOverview:  "https://developers.klaviyo.com/en/reference/api_overview",
+    dataModel:    "https://developers.klaviyo.com/en/docs/introduction_to_klaviyos_data_model",
     oauth:        "https://developers.klaviyo.com/en/docs/set_up_oauth",
     migrateOauth: "https://developers.klaviyo.com/en/docs/migrate_to_oauth_from_private_key_authentication",
     partnerBenefits: "https://cdn.sanity.io/files/6ct6b26e/marketing-prod/6fc2bca9900e2f4919cf99e18026f8ff66d21629.pdf",
@@ -348,6 +351,15 @@
   // ---- Build guide per category (Path A endpoint primary resource) ----
   function guideFor(catId) {
     const cat = CATEGORIES.find(c => c.id === catId) || CATEGORIES[CATEGORIES.length - 1];
+    if (catId === "other") {
+      return {
+        tag: "Custom · Build guide",
+        title: "Build a custom integration",
+        sub: "Start with Klaviyo's data model — profiles, events, and objects — and design the integration that fits your product.",
+        url: LINKS.dataModel,
+        icon: cat.icon,
+      };
+    }
     return {
       tag: cat.title + " · Build guide",
       title: "Build a " + cat.title + " integration",
@@ -638,7 +650,9 @@
         const cat = CATEGORIES.find(c => c.id === payload.cat);
         data = {
           eyebrow: "Your build path",
-          h: cat ? `Build your ${cat.title} integration` : "Your build path",
+          h: payload.cat === "other"
+            ? "Build a custom integration"
+            : (cat ? `Build your ${cat.title} integration` : "Your build path"),
           lede: "Start with the guide below — it's the main thing you need. The rest is supporting detail for when you're ready.",
           pills: ["Recommended guide", "OAuth", "Get listed"],
           primary: { tag: g.tag, title: g.title, sub: g.sub, url: g.url, icon: g.icon },
