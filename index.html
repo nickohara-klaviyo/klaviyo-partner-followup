@@ -209,6 +209,8 @@
     .res .txt .t { display: block; font-weight: 700; font-size: 14.5px; }
     .res .txt .d { display: block; font-size: 12.5px; color: var(--ink-soft); margin-top: 1px; }
     .res .arr { margin-left: auto; color: var(--ink-faint); }
+    .res.res-done { cursor: default; border-color: #cfe6d6; background: #f2faf5; }
+    .res.res-done .ico { background: #e2f2e8; color: #1f7a4d; }
 
     /* Follow-up block */
     .followup {
@@ -345,8 +347,6 @@
     smileCaseStudy: "https://www.klaviyo.com/customers/case-studies/smileio-loyalty-integration",
     marketplace:  "https://marketplace.klaviyo.com/en-us/",
     caseStudies:  "https://www.klaviyo.com/partners",
-    // TODO: replace with the real Claude skill URL once published
-    claudeSkill:  "#",
     contactEmail: "partners@klaviyo.com",
   };
 
@@ -397,7 +397,7 @@
       secondary: [
         { icon: "🤝", title: "Understand partner benefits", desc: "What the program gets you", url: LINKS.partnerBenefits },
         { icon: "📋", title: "Submit your app for review", desc: "Get listed in the marketplace", url: LINKS.submitReview },
-        { icon: "✨", title: "Migrate with Claude", desc: "Guided skill (coming soon)", url: LINKS.claudeSkill },
+        { icon: "✨", title: "Migrate with Claude", desc: "Guided skill (coming soon)", action: "requestMigrateSkill(this)" },
       ],
     },
     existing: {
@@ -513,12 +513,17 @@
   };
 
   function resourceListHTML(items) {
-    return items.map(r => `
-      <a class="res" href="${r.url}" target="_blank" rel="noopener">
+    return items.map(r => {
+      const attrs = r.action
+        ? `href="#" onclick="${r.action}; return false;"`
+        : `href="${r.url}" target="_blank" rel="noopener"`;
+      return `
+      <a class="res" ${attrs}>
         <span class="ico">${r.icon}</span>
         <span class="txt"><span class="t">${r.title}</span><span class="d">${r.desc}</span></span>
         <span class="arr">→</span>
-      </a>`).join("");
+      </a>`;
+    }).join("");
   }
 
   function handoffHTML() {
@@ -694,6 +699,20 @@
     session.categoryLabel = cat ? cat.title : id;
     track("category_selected");
     go("endpoint", { path: "new", cat: id });
+  };
+
+  // "Migrate with Claude" — skill isn't published yet, so log the interest
+  // and confirm we'll follow up (no navigation).
+  window.requestMigrateSkill = function (el) {
+    session.migrateSkillRequested = true;
+    track("requested_migrate_skill");
+    el.classList.add("res-done");
+    el.onclick = null;
+    el.removeAttribute("href");
+    el.innerHTML =
+      '<span class="ico">✓</span>' +
+      '<span class="txt"><span class="t">We\'ll send it your way</span>' +
+      '<span class="d">Migrate with Claude is coming soon — we\'ll email it to you.</span></span>';
   };
 
   window.go = go;
