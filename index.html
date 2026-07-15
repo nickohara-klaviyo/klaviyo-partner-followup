@@ -306,14 +306,16 @@
   };
 
   // ---- Path A categories (Screen 3) → each maps to a build guide endpoint ----
+  // Add a `guide` URL as each use-case guide is published; unmatched ones
+  // fall back to the data-model intro until their guide exists.
   const CATEGORIES = [
-    { id: "loyalty",      icon: "🎁", title: "Loyalty & Rewards" },
+    { id: "loyalty",      icon: "🎁", title: "Loyalty & Rewards", guide: "https://developers.klaviyo.com/en/docs/guide_to_integrating_a_loyalty_platform" },
     { id: "reviews",      icon: "⭐", title: "Reviews" },
-    { id: "subscriptions",icon: "🔁", title: "Subscriptions" },
-    { id: "advertising",  icon: "📣", title: "Advertising" },
-    { id: "shipping",     icon: "📦", title: "Shipping & Returns" },
+    { id: "subscriptions",icon: "🔁", title: "Subscriptions", guide: "https://developers.klaviyo.com/en/docs/guide_to_integrating_a_subscription_ecommerce_platform" },
+    { id: "advertising",  icon: "📣", title: "Advertising", guide: "https://developers.klaviyo.com/en/docs/guide_to_integrating_an_ad_platform" },
+    { id: "shipping",     icon: "📦", title: "Shipping & Returns", guide: "https://developers.klaviyo.com/en/docs/guide_to_integrating_a_shipping_platform" },
     { id: "helpdesk",     icon: "💬", title: "Helpdesk & CX" },
-    { id: "ecommerce",    icon: "🛒", title: "Ecommerce / Storefront" },
+    { id: "ecommerce",    icon: "🛒", title: "Ecommerce / Storefront", guide: "https://developers.klaviyo.com/en/docs/guide_to_integrating_a_platform_without_a_pre_built_klaviyo_integration" },
     { id: "forms",        icon: "📝", title: "Forms & Popups" },
     { id: "quizzes",      icon: "❓", title: "Quizzes & Surveys" },
     { id: "analytics",    icon: "📊", title: "Analytics & Reporting" },
@@ -364,7 +366,7 @@
       tag: cat.title + " · Build guide",
       title: "Build a " + cat.title + " integration",
       sub: "The recommended starting point for your category — data model, key APIs, and a working flow.",
-      url: LINKS.apiOverview,
+      url: cat.guide || LINKS.dataModel,
       icon: cat.icon,
     };
   }
